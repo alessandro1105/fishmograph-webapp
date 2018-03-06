@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" ng-app="fishmograph">
+
+<head>
+    <base href="/webapp/">
+    <meta charset="utf-8" />
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png" />
+    <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Fishmograph</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrp.css" rel="stylesheet" />
+    <!-- Material Dashboard CSS -->
+    <link href="style.css" rel="stylesheet" />
+    <!-- External files -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
+
+    <!-- ui-notify css -->
+    <link href="ui-ntfy.css" rel="stylesheet" />
+
+    <script type="text/javascript" src="angular.js"></script>
+    <script type="text/javascript" src="ui-rtr.js"></script>
+    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="ui-ntfy.js"></script>
+</head>
+
+<body class="perfect-scrollbar-off">
+    <ui-view></ui-view>
+</body>
+
+<script type="text/ng-template" id="alert-success.html">
+    <div class="ui-notification custom-template">
+        <div class="alert alert-success alert-with-icon">
+            <button type="button" aria-hidden="true" class="close">×</button>
+            <i data-notify="icon" class="material-icons">notifications</i>
+            <span data-notify="message">{{message}}</span>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="alert-danger.html">
+    <div class="ui-notification custom-template">
+        <div class="alert alert-danger alert-with-icon">
+            <button type="button" aria-hidden="true" class="close">×</button>
+            <i data-notify="icon" class="material-icons">notifications</i>
+            <span data-notify="message">{{message}}</span>
+        </div>
+    </div>
+</script>
+
+<script type="text/ng-template" id="alert-warning.html">
+    <div class="ui-notification custom-template">
+        <div class="alert alert-warning alert-with-icon">
+            <button type="button" aria-hidden="true" class="close">×</button>
+            <i data-notify="icon" class="material-icons">notifications</i>
+            <span data-notify="message">{{message}}</span>
+        </div>
+    </div>
+</script>
+
+</html>

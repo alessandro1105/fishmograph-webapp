@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header" data-background-color="blue" ng-click="alert1()">
+                <h4 class="title">Earthquakes</h4>
+                <p class="category">Events registered by Fishmograph</p>
+            </div>
+            <div class="card-content">
+                <img src="loading.svg" class="loader">
+                <div class="row" style="display: none">
+                    <div class="col-md-12 text-center">
+                        <p class="description">(Un)fortunaly no earthquakes have been recorded!</p>
+                    </div>
+                </div>
+                <table class="table table-responsive table-striped" style="display: none;">
+                    <thead>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>SI</th>
+                        <th>PGA</th>
+                        <th>Temperature</th>
+                        <th>Shutoff</th>
+                        <th>Collapse</th>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>dd/MM/yyyy HH:mm:ss</td>
+                            <td>10 m/s</td>
+                            <td>15 m/s^2</td>
+                            <td>23 °C</td>
+                            <td><span>dd/MM/yyyy HH:mm:ss</span></td>
+                            <td><span>No</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

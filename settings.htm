@@ -1,0 +1,92 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-nav-tabs">
+            <div class="card-header" data-background-color="blue">
+                <div class="nav-tabs-navigation">
+                    <div class="nav-tabs-wrapper">
+                        <ul class="nav nav-tabs" data-tabs="tabs">
+                            <li ng-class="{active: isPanelActive(0)}">
+                                <a ng-click="setActivePanel(0)">
+                                    <i class="material-icons">memory</i> D7S Sensor
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                            <li ng-class="{active: isPanelActive(1)}">
+                                <a ng-click="setActivePanel(1)">
+                                    <i class="material-icons">person</i> User
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                            <li ng-class="{active: isPanelActive(2)}">
+                                <a ng-click="setActivePanel(2)">
+                                    <i class="material-icons">settings</i> General
+                                    <div class="ripple-container"></div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="tab-content">
+                    <div class="tab-pane" ng-class="{active: isPanelActive(0)}">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center" style="margin-top: 10px;">
+                                    <button type="submit" class="btn btn-warning">Initialize Sensor</button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center" style="margin-top: 10px;">
+                                    <button type="submit" class="btn btn-success">Selftest</button>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center" style="margin-top: 10px;">
+                                    <button type="submit" class="btn btn-danger">Clear Sensor Memory</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" ng-class="{active: isPanelActive(1)}">
+                        <form>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">New password</label>
+                                        <input type="password" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group label-floating">
+                                        <label class="control-label">Confirm password</label>
+                                        <input type="password" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="text-center" style="margin-top: 10px;">
+                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane" ng-class="{active: isPanelActive(2)}">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="text-center" style="margin-top: 10px;">
+                                    <button type="submit" class="btn btn-danger">Clear Earthquakes Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

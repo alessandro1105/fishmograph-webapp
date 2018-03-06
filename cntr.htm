@@ -1,0 +1,93 @@
+<div class="wrapper" ng-class="{'nav-open': isNavCollapsed}" ng-init="isNavCollapsed = false">
+    <div class="sidebar" data-color="purple">
+        <div class="logo">
+            <div style="max-width: 400px;">
+                <img class="img-responsive" src="logo.png" />
+            </div>
+        </div>
+        <div class="sidebar-wrapper">
+            <ul class="nav">
+                <li ng-class="{active: isMenuItemHighlighted(0)}">
+                    <a ui-sref="page.earthquakes">
+                        <i class="material-icons">public</i>
+                        <p>Earthquakes</p>
+                    </a>
+                </li>
+                <li ng-class="{active: isMenuItemHighlighted(1)}">
+                    <a ui-sref="page.d7s">
+                        <i class="material-icons">memory</i>
+                        <p>D7S Readings</p>
+                    </a>
+                </li>
+                <li ng-class="{active: isMenuItemHighlighted(2)}">
+                    <a ui-sref="page.alerts.list">
+                        <i class="material-icons">notifications</i>
+                        <p>Email Alerts</p>
+                    </a>
+                </li>
+                <li ng-class="{active: isMenuItemHighlighted(3)}">
+                    <a ui-sref="page.settings">
+                        <i class="material-icons">settings</i>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                <li ng-class="{active: isMenuItemHighlighted(4)}">
+                    <a ui-sref="page.credits">
+                        <i class="material-icons">code</i>
+                        <p>Credits &amp; License</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="" ng-click="logout()">
+                        <i class="material-icons">exit_to_app</i>
+                        <p>Sign out</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="sidebar-background" style="background-image: url(sidebar.jpg)"></div>
+    </div>
+    <div class="main-panel">
+        <nav class="navbar navbar-transparent navbar-absolute">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand"> {{getPageTitle()}} </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a>
+                                <p>Admin</p>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" ng-click="logout()">
+                                <i class="material-icons">exit_to_app</i>
+                                <p class="hidden-lg hidden-md">Sign out</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="content">
+            <div class="container-fluid">
+
+                <ui-view></ui-view>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container-fluid">
+                <p class="copyright text-center">
+                    Copyright &copy; 2017 Fishmograph. Delevoped by <a href="https://github.com/alessandro1105">Alessandro Pasqualini</a>
+                </p>
+            </div>
+        </footer>
+    </div>
+</div>
