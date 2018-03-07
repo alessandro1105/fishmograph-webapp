@@ -16,6 +16,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 .constant("FH_API_SETTINGS_SELFTEST", "/settings/selftest")
 .constant("FH_API_SETTINGS_CLEAR_D7S", "/settings/clear/d7s")
 .constant("FH_API_SETTINGS_CLEAR_DATA", "/settings/clear/data")
+.constant("FH_API_ALERT_LIST", "/alert/list")
+.constant("FH_API_ALERT_DELETE", "/alert/delete")
+.constant("FH_API_ALERT_NEW", "/alert/new")
 
 
 .config(function ($urlRouterProvider, $locationProvider, $urlMatcherFactoryProvider, $stateProvider, $httpProvider, NotificationProvider) {
@@ -488,12 +491,98 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 })
 
 // Alerts list page controller
-.controller("alertsListCtrl", function ($scope) {
+.controller("alertsListCtrl", function ($scope, $state, AlertService, AuthorizedHttp, FH_HOST, FH_API_ALERT_LIST, FH_API_ALERT_DELETE) {
+	// Show the loader gear
+	$scope.loader = true;
+	// Prepare the data
+	$scope.data = {};
+
+	AuthorizedHttp.request({
+		method: 'GET',
+		url: FH_HOST + FH_API_ALERT_LIST,
+		headers: {
+	   		'Content-Type': undefined
+	 	}
+	// Success
+	}).then(function (response) {
+		// Clear old data
+		$scope.data = {};
+
+		// If the data are valid
+		if (angular.isArray(response.data) && response.data.length != 0) {
+			$scope.data.items = response.data;
+		}
+
+	// Error
+	}, function () {
+		// Clear the data
+		$scope.data = {};
+		// Alert that the server encountered some problems
+		AlertService.danger("The server has encountered some problems. Try again later!");
 	
+	// Finally
+	}).finally(function () {
+		// Hide the loader gear
+		$scope.loader = false;
+	});
+
+	$scope.addRecipient = function () {
+		if ($scope.data.items.length == 5) {
+			AlertService.warning("You can only set 5 recipients!");
+		} else {
+			$state.go("page.alerts.new");
+		}
+	}
+
+	$scope.deleteRecipient = function (index) {
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_ALERT_DELETE,
+			headers: {
+		   		'Content-Type': undefined
+		 	},
+		 	data: {
+				index: index
+			}
+		// Success
+		}).then(function () {
+			// remove the element from the array
+			$scope.data.items.splice(index, 1);
+
+		// Error
+		}, function () {
+			// Alert that the server encountered some problems
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		});
+	}
 })
 
 // New alert page controller
-.controller("alertsNewCtrl", function ($scope) {
+.controller("alertsNewCtrl", function ($scope, $state, AlertService, AuthorizedHttp, FH_HOST, FH_API_ALERT_NEW) {
+
+	$scope.newRecipient = function (name, email) {
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_ALERT_NEW,
+			headers: {
+		   		'Content-Type': undefined
+		 	},
+		 	data: {
+				name: name,
+				email: email
+			}
+		// Success
+		}).then(function () {
+			AlertService.success("The new recipient has been added!");
+			// Transit to the list page
+			$state.go("page.alerts.list");
+
+		// Error
+		}, function () {
+			// Alert that the server encountered some problems
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		});
+	}
 	
 })
 

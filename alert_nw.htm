@@ -14,20 +14,20 @@
                         <div class="col-md-6">
                             <div class="form-group label-floating">
                                 <label class="control-label">Name</label>
-                                <input type="text" class="form-control">
+                                <input type="text" class="form-control" ng-model="data.name" maxlength="40">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group label-floating">
                                 <label class="control-label">Email</label>
-                                <input type="text" class="form-control">
+                                <input type="email" class="form-control" ng-model="data.email" maxlength="50">
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="text-center" style="margin-top: 10px;">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary" ng-click="newRecipient(data.name, data.email)">Submit</button>
                             </div>
                         </div>
                     </div>
