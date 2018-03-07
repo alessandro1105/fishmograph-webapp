@@ -1,12 +1,21 @@
 angular.module("fishmograph", ["ui.router", "ui-notification"])
 
 // --- FISHMOGRAPH API ---
-// Host address
-.constant("FH_HOST", "http://192.168.1.200")
+// Host address (debug)
+.constant("FH_HOST", "http://192.168.0.200")
+// Host address (production)
+//.constant("FH_HOST", "/");
 
 // Login/Logout
 .constant("FH_API_LOGIN", "/login")
 .constant("FH_API_LOGOUT", "/logout")
+.constant("FH_API_STATUS", "/status")
+.constant("FH_API_DATA", "/data")
+.constant("FH_API_DATA_D7S", "/data/d7s")
+.constant("FH_API_SETTINGS_INITIALIZE", "/settings/initialize")
+.constant("FH_API_SETTINGS_SELFTEST", "/settings/selftest")
+.constant("FH_API_SETTINGS_CLEAR_D7S", "/settings/clear/d7s")
+.constant("FH_API_SETTINGS_CLEAR_DATA", "/settings/clear/data")
 
 
 .config(function ($urlRouterProvider, $locationProvider, $urlMatcherFactoryProvider, $stateProvider, $httpProvider, NotificationProvider) {
@@ -36,7 +45,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 		data: {
 			requireLogin: true // every child state require login
 		},
-		redirectTo: "page.earthquakes"
+		//redirectTo: "page.earthquakes"
 	});
 
 	// Earthquakes
@@ -129,7 +138,6 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 		$transitions.onStart({ }, function(transition) {
 			//if the state require the login and the user is not logged
 			if (transition.to().name != "login" && transition.to().data !== undefined && transition.to().data.requireLogin && !LoginService.isUserLogged()) {
-				alert(transition.to().name);
 				return transition.router.stateService.target('login');
 			}
 		});
@@ -172,9 +180,10 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 		
 	// Function to logout a user
 	function logout(request = true) {
-		var deferred = $q.defer();
 		// If the logout need to be sent to the server
 		if (request) {
+			var deferred = $q.defer();
+
 			$http({
 				method: 'POST',
 				url: FH_HOST + FH_API_LOGOUT,
@@ -192,11 +201,11 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 				// Resolving the promise
 				deferred.reject();
 			});
+
+			return deferred.promise;
 		} else {
 			isLogged = false;
 		}
-		
-		return deferred.promise;
 	}
 
 	// Function to check if a user is logged
@@ -240,7 +249,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 
 // Authorized http service
 // It will send the request using $http service, if the response is 401 (Unauthorized) the user is redirected to login
-.factory("AuthorizedHttp", function($http, $state, LoginService, AlertService) {
+.factory("AuthorizedHttp", function($http, $state, $q, LoginService, AlertService) {
 
 	function request(request) {
 		var deferred = $q.defer();
@@ -253,11 +262,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 			// If the user is not autorized
 			if (response.status == 401) {
 				// Logout the user and redirect him to the login page
-				LoginService.logout(false).then(function () {
-					$state.go("login");
-				}, function () {
-					AlertService.danger("The server has encountered some problems. Try again later!");
-				});
+				LoginService.logout(false);
+				$state.go("login");
+				return;
 			}
 			// Resolving the promise
 			deferred.reject(response);
@@ -274,7 +281,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 
 // --- CONTROLLERS ---
 // Earthquakes page controller
-.controller("loginCtrl", function ($scope, $state, LoginService, AlertService, AuthorizedHttp) {
+.controller("loginCtrl", function ($scope, $state, LoginService, AlertService) {
 	// If the user is already logged in redirect him to the logged page
 	// Check if the user is already logged in
 	if (LoginService.isUserLogged()) {
@@ -297,9 +304,10 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 })
 
 // Menu controller
-.controller("pageCtrl", function ($scope, $state, LoginService, AlertService) {
+.controller("pageCtrl", function ($scope, $state, $interval, $filter, LoginService, AlertService, AuthorizedHttp, FH_HOST, FH_API_STATUS) {
 	var pageTitle = "";
 	var menuItemHighlighted = -1;
+	var checkingStatus = false;
 	
 	// Set the page title
 	$scope.setPageTitle = function (title) {
@@ -328,20 +336,148 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 			AlertService.danger("The server has encountered some problems. Try again later!");
 		});
 	}
+
+	//status check every 5 seconds
+	function checkStatus() {
+		if (checkingStatus) {
+			return;
+		}
+
+		checkingStatus = true;
+
+		if (LoginService.isUserLogged()) {
+			AuthorizedHttp.request({
+				method: 'GET',
+				url: FH_HOST + FH_API_STATUS,
+				headers: {
+			   		'Content-Type': undefined
+			 	}
+			// Success
+			}).then(function (response) {
+
+				if (response.data.status == 2) {
+					AlertService.warning("Earthquake started on " + $filter('date')(response.data.timestamp*1000, 'dd/MM/yyyy at HH:mm:ss'));
+				} else if (response.data.status == 3) {
+					AlertService.warning("Earthquake ended on " + $filter('date')(response.data.timestamp*1000, 'dd/MM/yyyy at HH:mm:ss'));
+				} else if (response.data.status == 4) {
+					AlertService.danger("Shutoff signal generated on " + $filter('date')(response.data.timestamp*1000, 'dd/MM/yyyy at HH:mm:ss'));
+				} else if (response.data.status == 3) {
+					AlertService.danger("Collapse signal generated on " + $filter('date')(response.data.timestamp*1000, 'dd/MM/yyyy at HH:mm:ss'));
+				}
+
+			// Error
+			}, function () {
+				// Alert that the server encountered some problems
+				AlertService.danger("The server has encountered some problems. Try again later!");
+
+			// Finally
+			}).finally(function () {
+				checkingStatus = false;
+			});
+		}
+	}
+
+	//register event
+	$interval(checkStatus, 5000);
 })
 
 // Earthquakes page controller
-.controller("earthquakesCtrl", function ($scope) {
+.controller("earthquakesCtrl", function ($scope, AlertService, AuthorizedHttp, FH_HOST, FH_API_DATA) {
 	// Set page title and highlight the menu item
 	$scope.setPageTitle("Earthquakes Registered");
 	$scope.setMenuItemHighlighted(0);
+
+	// Show the loader gear
+	$scope.loader = true;
+	// Prepare the data
+	$scope.data = {};
+
+	AuthorizedHttp.request({
+		method: 'GET',
+		url: FH_HOST + FH_API_DATA,
+		headers: {
+	   		'Content-Type': undefined
+	 	}
+	// Success
+	}).then(function (response) {
+		// Clear old data
+		$scope.data = {};
+
+		// If the data are valid
+		if (angular.isArray(response.data) && response.data.length != 0) {
+			$scope.data.items = response.data;
+		}
+
+	// Error
+	}, function () {
+		// Clear the data
+		$scope.data = {};
+		// Alert that the server encountered some problems
+		AlertService.danger("The server has encountered some problems. Try again later!");
+	
+	// Finally
+	}).finally(function () {
+		// Hide the loader gear
+		$scope.loader = false;
+	});
 })
 
 // D7S Readings page controller
-.controller("d7sCtrl", function ($scope) {
+.controller("d7sCtrl", function ($scope, AlertService, AuthorizedHttp, FH_HOST, FH_API_DATA_D7S) {
 	// Set page title and highlight the menu item
 	$scope.setPageTitle("D7S Readings");
 	$scope.setMenuItemHighlighted(1);
+
+	// Show the loader gear
+	$scope.loader = true;
+	// Prepare the data
+	$scope.data = {};
+
+	AuthorizedHttp.request({
+		method: 'GET',
+		url: FH_HOST + FH_API_DATA_D7S,
+		headers: {
+	   		'Content-Type': undefined
+	 	}
+	// Success
+	}).then(function (response) {
+		// Prepare the data
+		$scope.data = {};
+
+		//prepare data
+		var lastest = [];
+		var ranked = [];
+		//lastest data
+		for (i = 0; i < 5; i++) {
+			if (response.data[0][i].si != 0 || response.data[0][i].pga != 0) {
+				lastest.push(response.data[0][i]);
+			}
+		}
+		if (lastest.length != 0) {
+			$scope.data.lastest = lastest;
+		}
+		//ranked data
+		for (i = 0; i < 5; i++) {
+			if (response.data[1][i].si != 0 || response.data[1][i].pga != 0) {
+				ranked.push(response.data[1][i]);
+			}
+		}
+		if (ranked.length != 0) {
+			$scope.data.ranked = ranked;
+		}
+
+	// Error
+	}, function () {
+		// Clear the data
+		$scope.data = {};
+		// Alert that the server encountered some problems
+		AlertService.danger("The server has encountered some problems. Try again later!");
+	
+	// Finally
+	}).finally(function () {
+		// Hide the loader gear
+		$scope.loader = false;
+	});
 })
 
 // Alerts container page controller
@@ -362,7 +498,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 })
 
 // Settings page controller
-.controller("settingsCtrl", function ($scope, Notification) {
+.controller("settingsCtrl", function ($scope, AlertService, AuthorizedHttp, FH_HOST, FH_API_SETTINGS_INITIALIZE, FH_API_SETTINGS_SELFTEST, FH_API_SETTINGS_CLEAR_DATA, FH_API_SETTINGS_CLEAR_D7S) {
 	var activePanel = 0;
 
 	// Set page title and highlight the menu item
@@ -377,6 +513,133 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 	// Check if the current panel is active
 	$scope.isPanelActive = function (item) {
 		return item == activePanel;
+	};
+
+	//only one request at a time
+	var requestOutgoing = false;
+
+	$scope.initialize = function () {
+		if (requestOutgoing) {
+			AlertService.warning("Too many commands! You can send one command at a time!");
+			return;
+		}
+
+		// We are making a request
+		requestOutgoing = true;
+
+		// Alert the user for the action
+		AlertService.warning("The sensor will be initialized!");
+
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_SETTINGS_INITIALIZE,
+			headers: {
+		   		'Content-Type': undefined
+		 	}
+		// Success
+		}).then(function (response) { //success promises
+			if (response.data.status == 1) {
+				AlertService.success("Sensor succesfully initialized!");
+			} else if (response.data.status == 2) {
+				AlertService.warning("Sensor cannot be initialized beacuse an earthquake is occuring!");
+			}
+		// Error
+		}, function () {
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		// Finally
+		}).finally(function () {
+			requestOutgoing = false;
+		});
+	};
+
+	$scope.selftest = function () {
+		if (requestOutgoing) {
+			AlertService.warning("Too many commands! You can send one command at a time.");
+			return;
+		}
+
+		// We are making a request
+		requestOutgoing = true;
+
+		// Alert the user for the action
+		AlertService.warning("The selftest procedure is started!");
+
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_SETTINGS_SELFTEST,
+			headers: {
+		   		'Content-Type': undefined
+		 	}
+		// Success
+		}).then(function (response) { //success promises
+			if (response.data.status == 1) {
+				AlertService.success("Selftest completed successfully!");
+			} else if (response.data.status == -1) {
+				AlertService.danger("Selftest ended with errors!");
+			} else if (response.data.status == 2) {
+				AlertService.warning("Selftest cannot be performed beacuse an earthquake is occuring!");
+			}
+		// Error
+		}, function () {
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		// Finally
+		}).finally(function () {
+			requestOutgoing = false;
+		});
+	};
+
+	$scope.clearMemory = function () {
+		if (requestOutgoing) {
+			AlertService.warning("Too many commands! You can send one command at a time.");
+			return;
+		}
+
+		// We are making a request
+		requestOutgoing = true;
+
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_SETTINGS_CLEAR_D7S,
+			headers: {
+		   		'Content-Type': undefined
+		 	}
+		// Success
+		}).then(function (response) { //success promises
+			AlertService.success("Sensor memory successfully cleared!");
+		// Error
+		}, function () {
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		// Finally
+		}).finally(function () {
+			requestOutgoing = false;
+		});
+	};
+
+	$scope.clearData = function () {
+		if (requestOutgoing) {
+			AlertService.warning("Too many commands! You can send one command at a time.");
+			return;
+		}
+
+		// We are making a request
+		requestOutgoing = true;
+
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_SETTINGS_CLEAR_DATA,
+			headers: {
+		   		'Content-Type': undefined
+		 	}
+		// Success
+		}).then(function (response) { //success promises
+			AlertService.success("Earthquake data has been successfully cleared!");
+		// Error
+		}, function () {
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		// Finally
+		}).finally(function () {
+			requestOutgoing = false;
+		});
 	};
 })
 

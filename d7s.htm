@@ -6,13 +6,13 @@
                 <p class="category">Lastest 5 events registered</p>
             </div>
             <div class="card-content">
-                <img src="loading.svg" class="loader">
-                <div class="row" style="display: none">
+                <img src="loading.svg" class="loader" ng-show="loader">
+                <div class="row" ng-show="!loader && !data.lastest">
                     <div class="col-md-12 text-center">
                         <p class="description">(Un)fortunaly no earthquakes have been recorded!</p>
                     </div>
                 </div>
-                <table class="table table-responsive table-striped" style="display: none;">
+                <table class="table table-responsive table-striped" ng-show="!loader && data.lastest">
                     <thead>
                         <th scope="col">#</th>
                         <th>SI</th>
@@ -20,29 +20,11 @@
                         <th>Temperature</th>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>10 m/s</td>
-                            <td>15 m/s^2</td>
-                            <td>12 °C</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>10 m/s</td>
-                            <td>15 m/s^2</td>
-                            <td>12 °C</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>10 m/s</td>
-                            <td>15 m/s^2</td>
-                            <td>12 °C</td>
-                        </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>10 m/s</td>
-                            <td>15 m/s^2</td>
-                            <td>12 °C</td>
+                        <tr ng-repeat="item in data.lastest">
+                            <td class="text-primary">{{$index +1}}</td>
+                            <td>{{item.si}} m/s</td>
+                            <td>{{item.pga}} m/s&sup2;</td>
+                            <td>{{item.temperature}} °C</td>
                         </tr>
                     </tbody>
                 </table>
@@ -55,13 +37,13 @@
                 <p class="category">The 5 biggest events registered</p>
             </div>
             <div class="card-content">
-                <img src="loading.svg" class="loader">
-                <div class="row" style="display: none">
+                <img src="loading.svg" class="loader" ng-show="loader">
+                <div class="row" ng-show="!loader && !data.ranked">
                     <div class="col-md-12 text-center">
                         <p class="description">(Un)fortunaly no earthquakes have been recorded!</p>
                     </div>
                 </div>
-                <table class="table table-responsive table-striped" style="display: none;">
+                <table class="table table-responsive table-striped" ng-show="!loader && data.ranked">
                     <thead>
                         <th>#</th>
                         <th>SI</th>
@@ -69,12 +51,12 @@
                         <th>Temperature</th>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>10 m/s</td>
-                            <td>15 m/s^2</td>
-                            <td>12 °C</td>
-                        </tr>                            
+                        <tr ng-repeat="item in data.ranked">
+                            <td class="text-primary">{{$index +1}}</td>
+                            <td>{{item.si}} m/s</td>
+                            <td>{{item.pga}} m/s&sup2;</td>
+                            <td>{{item.temperature}} °C</td>
+                        </tr>                                
                     </tbody>
                 </table>
             </div>
