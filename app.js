@@ -2,9 +2,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 
 // --- FISHMOGRAPH API ---
 // Host address (debug)
-.constant("FH_HOST", "http://192.168.0.200")
+//.constant("FH_HOST", "http://192.168.0.200")
 // Host address (production)
-//.constant("FH_HOST", "")
+.constant("FH_HOST", "")
 
 // Login/Logout
 .constant("FH_API_LOGIN", "/login")
