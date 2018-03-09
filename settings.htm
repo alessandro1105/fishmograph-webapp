@@ -55,20 +55,20 @@
                                 <div class="col-md-6">
                                     <div class="form-group label-floating">
                                         <label class="control-label">New password</label>
-                                        <input type="password" class="form-control">
+                                        <input type="password" class="form-control" ng-model="data.password" maxlength="20" minlength="7">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group label-floating">
                                         <label class="control-label">Confirm password</label>
-                                        <input type="password" class="form-control">
+                                        <input type="password" class="form-control" ng-model="data.confirmPassword">
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="text-center" style="margin-top: 10px;">
-                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                        <button type="submit" class="btn btn-primary" ng-click="changePassword(data.password, data.confirmPassword)">Submit</button>
                                     </div>
                                 </div>
                             </div>

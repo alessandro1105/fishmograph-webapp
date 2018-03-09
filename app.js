@@ -4,11 +4,12 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 // Host address (debug)
 .constant("FH_HOST", "http://192.168.0.200")
 // Host address (production)
-//.constant("FH_HOST", "/");
+//.constant("FH_HOST", "")
 
 // Login/Logout
 .constant("FH_API_LOGIN", "/login")
 .constant("FH_API_LOGOUT", "/logout")
+.constant("FH_API_PASSWORD_UPDATE", "/password/update")
 .constant("FH_API_STATUS", "/status")
 .constant("FH_API_DATA", "/data")
 .constant("FH_API_DATA_D7S", "/data/d7s")
@@ -495,7 +496,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 	// Show the loader gear
 	$scope.loader = true;
 	// Prepare the data
-	$scope.data = {};
+	$scope.data = {
+		items: {}
+	};
 
 	AuthorizedHttp.request({
 		method: 'GET',
@@ -506,7 +509,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 	// Success
 	}).then(function (response) {
 		// Clear old data
-		$scope.data = {};
+		$scope.data = {
+			items: {}
+		};
 
 		// If the data are valid
 		if (angular.isArray(response.data) && response.data.length != 0) {
@@ -516,7 +521,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 	// Error
 	}, function () {
 		// Clear the data
-		$scope.data = {};
+		$scope.data = {
+			items: {}
+		};
 		// Alert that the server encountered some problems
 		AlertService.danger("The server has encountered some problems. Try again later!");
 	
@@ -587,7 +594,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 })
 
 // Settings page controller
-.controller("settingsCtrl", function ($scope, AlertService, AuthorizedHttp, FH_HOST, FH_API_SETTINGS_INITIALIZE, FH_API_SETTINGS_SELFTEST, FH_API_SETTINGS_CLEAR_DATA, FH_API_SETTINGS_CLEAR_D7S) {
+.controller("settingsCtrl", function ($scope, AlertService, AuthorizedHttp, FH_HOST, FH_API_SETTINGS_INITIALIZE, FH_API_SETTINGS_SELFTEST, FH_API_SETTINGS_CLEAR_DATA, FH_API_SETTINGS_CLEAR_D7S, FH_API_PASSWORD_UPDATE) {
 	var activePanel = 0;
 
 	// Set page title and highlight the menu item
@@ -728,6 +735,31 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 		// Finally
 		}).finally(function () {
 			requestOutgoing = false;
+		});
+	};
+
+	$scope.changePassword = function (password, confirmPassword) {
+		if (password != confirmPassword) {
+			AlertService.danger("Password mismatch!");
+			return;
+		}
+
+		AuthorizedHttp.request({
+			method: 'POST',
+			url: FH_HOST + FH_API_PASSWORD_UPDATE,
+			headers: {
+		   		'Content-Type': undefined
+		 	},
+		 	data: {
+		 		password: password
+		 	}
+		// Success
+		}).then(function () { //success promises
+			AlertService.success("Password succesfully updated!");
+		// Error
+		}, function () {
+			AlertService.danger("The server has encountered some problems. Try again later!");
+		// Finally
 		});
 	};
 })
