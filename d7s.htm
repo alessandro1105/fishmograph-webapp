@@ -14,14 +14,14 @@
                 </div>
                 <table class="table table-responsive table-striped" ng-show="!loader && data.lastest">
                     <thead>
-                        <th scope="col">#</th>
+                        <th>#</th>
                         <th>SI</th>
                         <th>PGA</th>
                         <th>Temperature</th>
                     </thead>
                     <tbody>
                         <tr ng-repeat="item in data.lastest">
-                            <td class="text-primary">{{$index +1}}</td>
+                            <td>{{$index +1}}</td>
                             <td>{{item.si}} m/s</td>
                             <td>{{item.pga}} m/s&sup2;</td>
                             <td>{{item.temperature}} °C</td>
@@ -52,7 +52,7 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="item in data.ranked">
-                            <td class="text-primary">{{$index +1}}</td>
+                            <td>{{$index +1}}</td>
                             <td>{{item.si}} m/s</td>
                             <td>{{item.pga}} m/s&sup2;</td>
                             <td>{{item.temperature}} °C</td>

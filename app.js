@@ -17,9 +17,9 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 .constant("FH_API_SETTINGS_SELFTEST", "/settings/selftest")
 .constant("FH_API_SETTINGS_CLEAR_D7S", "/settings/clear/d7s")
 .constant("FH_API_SETTINGS_CLEAR_DATA", "/settings/clear/data")
-.constant("FH_API_ALERT_LIST", "/alert/list")
-.constant("FH_API_ALERT_DELETE", "/alert/delete")
-.constant("FH_API_ALERT_NEW", "/alert/new")
+.constant("FH_API_RECIPIENT_LIST", "/recipient/list")
+.constant("FH_API_RECIPIENT_DELETE", "/recipient/delete")
+.constant("FH_API_RECIPIENT_NEW", "/recipient/new")
 
 
 .config(function ($urlRouterProvider, $locationProvider, $urlMatcherFactoryProvider, $stateProvider, $httpProvider, NotificationProvider) {
@@ -107,10 +107,8 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 	$urlRouterProvider.otherwise(function ($injector) {
 		//getting $state service from $injector
 		$state = $injector.get("$state");
-		//transition to the error404 state
-		//$state.go("index");
-
-		alert("ERRORE 404");
+		//transition to the default page
+		$state.go("page.earthquakes");
 	});
 
 	// --- HTTP CONFIG ---
@@ -492,7 +490,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 })
 
 // Alerts list page controller
-.controller("alertsListCtrl", function ($scope, $state, AlertService, AuthorizedHttp, FH_HOST, FH_API_ALERT_LIST, FH_API_ALERT_DELETE) {
+.controller("alertsListCtrl", function ($scope, $state, AlertService, AuthorizedHttp, FH_HOST, FH_API_RECIPIENT_LIST, FH_API_RECIPIENT_DELETE) {
 	// Show the loader gear
 	$scope.loader = true;
 	// Prepare the data
@@ -502,7 +500,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 
 	AuthorizedHttp.request({
 		method: 'GET',
-		url: FH_HOST + FH_API_ALERT_LIST,
+		url: FH_HOST + FH_API_RECIPIENT_LIST,
 		headers: {
 	   		'Content-Type': undefined
 	 	}
@@ -544,7 +542,7 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 	$scope.deleteRecipient = function (index) {
 		AuthorizedHttp.request({
 			method: 'POST',
-			url: FH_HOST + FH_API_ALERT_DELETE,
+			url: FH_HOST + FH_API_RECIPIENT_DELETE,
 			headers: {
 		   		'Content-Type': undefined
 		 	},
@@ -565,12 +563,12 @@ angular.module("fishmograph", ["ui.router", "ui-notification"])
 })
 
 // New alert page controller
-.controller("alertsNewCtrl", function ($scope, $state, AlertService, AuthorizedHttp, FH_HOST, FH_API_ALERT_NEW) {
+.controller("alertsNewCtrl", function ($scope, $state, AlertService, AuthorizedHttp, FH_HOST, FH_API_RECIPIENT_NEW) {
 
 	$scope.newRecipient = function (name, email) {
 		AuthorizedHttp.request({
 			method: 'POST',
-			url: FH_HOST + FH_API_ALERT_NEW,
+			url: FH_HOST + FH_API_RECIPIENT_NEW,
 			headers: {
 		   		'Content-Type': undefined
 		 	},
