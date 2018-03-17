@@ -1,6 +1,6 @@
 # Fishmograph Webapp
 
-Fishmograph is an opensource seismograph based on D7S earthquakes sensor by Omron and Fishino 32. It allow earthquakes monitoring that happens inside our home, notifying us through email of any event registered by the sensor. This allow us to secure people and electronic devices.
+Fishmograph is an opensource seismograph based on D7S earthquakes sensor by Omron and Fishino 32. It allow earthquakes monitoring that happen inside our home, notifying us through email of any event registered by the sensor. This allow us to secure people and electronic devices.
 
 This repo contains the webapp code of Fishmograph project.
 
